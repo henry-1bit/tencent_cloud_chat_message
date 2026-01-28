@@ -47,11 +47,13 @@ class _TencentCloudChatMessageHeaderInfoState
         }
       }
     } else {
-      List<V2TimGroupMemberFullInfo> groupMemberList =
-          widget.getGroupMembersInfo();
+      List<V2TimGroupMemberFullInfo> groupMemberList = widget
+          .getGroupMembersInfo();
       var list = groupMemberList
-          .map((e) =>
-              TencentCloudChatUtils.getDisplayNameByV2TimGroupMemberInfo(e))
+          .map(
+            (e) =>
+                TencentCloudChatUtils.getDisplayNameByV2TimGroupMemberInfo(e),
+          )
           .toList();
       var len = list.length;
       if (len > 2) {
@@ -65,43 +67,52 @@ class _TencentCloudChatMessageHeaderInfoState
   Widget defaultBuilder(BuildContext context) {
     final infoDetail = _getInfoDetailed(widget.conversation);
     return TencentCloudChatThemeWidget(
-        build: (context, colorTheme, textStyle) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                        child: Text(
-                      widget.showName ?? TencentCloudChatUtils.checkString(
-                              widget.conversation?.showName) ??
-                          widget.userID ??
-                          tL10n.chat,
+      build: (context, colorTheme, textStyle) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.showName ??
+                      TencentCloudChatUtils.checkString(
+                        widget.conversation?.showName,
+                      ) ??
+                      widget.userID ??
+                      tL10n.chat,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: textStyle.standardLargeText,
+                    fontWeight: FontWeight.bold,
+                    color: colorTheme.primaryTextColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (widget.showUserOnlineStatus &&
+              TencentCloudChatUtils.checkString(infoDetail) != null)
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      infoDetail,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          fontSize: textStyle.standardLargeText,
-                          fontWeight: FontWeight.bold,
-                          color: colorTheme.primaryTextColor),
-                    ))
-                  ],
-                ),
-                if (widget.showUserOnlineStatus && TencentCloudChatUtils.checkString(infoDetail) != null)
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: Text(
-                              infoDetail,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: textStyle.standardSmallText,
-                              color: colorTheme.secondaryTextColor),
-                        ))
-                      ],
+                        fontSize: textStyle.standardSmallText,
+                        color: colorTheme.secondaryTextColor,
+                      ),
                     ),
-                  )
-              ],
-            ));
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }

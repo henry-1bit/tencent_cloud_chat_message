@@ -40,7 +40,7 @@ class TencentCloudChatMessageItemWithMenu extends StatefulWidget {
 class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<TencentCloudChatMessageItemWithMenu>
     with TickerProviderStateMixin {
   final Stream<TencentCloudChatMessageData<dynamic>>? _messageDataStream =
-  TencentCloudChat.instance.eventBusInstance.on<TencentCloudChatMessageData>("TencentCloudChatMessageData");
+  TencentCloudChat.instance.eventBusInstance.on<TencentCloudChatMessageData>('TencentCloudChatMessageData');
   late StreamSubscription<TencentCloudChatMessageData<dynamic>>? _messageDataSubscription;
 
   final isDesktopScreen = TencentCloudChatScreenAdapter.deviceScreenType == DeviceScreenType.desktop;
@@ -74,15 +74,15 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
   List<TencentCloudChatMessageGeneralOptionItem> _menuOptions = [];
 
   void _messageDataHandler(TencentCloudChatMessageData messageData) {
-    final msgID = widget.data.message.msgID ?? "";
+    final msgID = widget.data.message.msgID ?? '';
     final TencentCloudChatMessageDataKeys messageDataKeys = messageData.currentUpdatedFields;
     final messageNeedUpdate = TencentCloudChat.instance.dataInstance.messageData.messageNeedUpdate;
 
     switch (messageDataKeys) {
       case TencentCloudChatMessageDataKeys.messageNeedUpdate:
         if (messageNeedUpdate != null && (
-              (TencentCloudChatUtils.checkString(msgID) != null && msgID == messageNeedUpdate.msgID) ||
-                  (TencentCloudChatUtils.checkString(messageNeedUpdate.id) != null && widget.data.message.id == messageNeedUpdate.id)
+            (TencentCloudChatUtils.checkString(msgID) != null && msgID == messageNeedUpdate.msgID) ||
+                (TencentCloudChatUtils.checkString(messageNeedUpdate.id) != null && widget.data.message.id == messageNeedUpdate.id)
         )) {
           if (messageNeedUpdate.status == MessageStatus.V2TIM_MSG_STATUS_LOCAL_REVOKED) {
             if(!isDesktopScreen){
@@ -148,14 +148,14 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
   }
 
   void _uikitListener(Map<String, dynamic> data) {
-    if (data.containsKey("eventType")) {
-      if (data["eventType"] == "onClickReactionSelector") {
+    if (data.containsKey('eventType')) {
+      if (data['eventType'] == 'onClickReactionSelector') {
         if (isDesktopScreen) {
           _removeDesktopMenu();
         } else {
           _cancelMobileMessageActions();
         }
-      } else if (_showActions && data["eventType"] == "onShowMessageReactionDetail") {
+      } else if (_showActions && data['eventType'] == 'onShowMessageReactionDetail') {
         if (isDesktopScreen) {
           _removeDesktopMenu();
         } else {
@@ -220,12 +220,12 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
       child: TencentCloudChatThemeWidget(
         build: (context, colorTheme, textStyle) {
           final Map<String, String> data = {};
-          data["msgID"] = widget.data.message.msgID!;
-          data["backgroundColor"] = colorTheme.backgroundColor.value.toString();
-          data["borderColor"] = colorTheme.dividerColor.value.toString();
-          data["platformMode"] = isDesktopScreen ? "desktop" : "mobile";
+          data['msgID'] = widget.data.message.msgID!;
+          data['backgroundColor'] = colorTheme.backgroundColor.value.toString();
+          data['borderColor'] = colorTheme.dividerColor.value.toString();
+          data['platformMode'] = isDesktopScreen ? 'desktop' : 'mobile';
           return widget.data.messageReactionPluginInstance?.getWidgetSync(
-            methodName: "messageReactionSelector",
+            methodName: 'messageReactionSelector',
             data: data,
           ) ?? const SizedBox(
             width: 0,
@@ -263,82 +263,84 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
     required TencentCloudChatThemeColors colorTheme,
     required TencentCloudChatTextStyle textStyle,
   }) {
-    List<TableRow> menuItems = [];
+    final menuItems = <TableRow>[];
 
     final menuOptions = widget.methods.getMenuOptions();
-    for (int i = 0; i < menuOptions.length; i++) {
+
+    final cells = <Widget>[];
+
+    for (var i = 0; i < menuOptions.length; i++) {
       final e = menuOptions[i];
 
-      menuItems.add(
-        TableRow(
-          children: [
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  _closeMobileMenu();
-                  e.onTap();
-                },
-                child: Container(
-                  decoration: (i < menuOptions.length - 1)
-                      ? BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(color: colorTheme.dividerColor, width: 0.5),
+      cells.add(
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              _closeMobileMenu();
+              e.onTap();
+            },
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: getSquareSize(8),
+                horizontal: getSquareSize(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Builder(builder: (ctx) {
+                    if (e.iconAsset != null) {
+                      final type = e.iconAsset!.path.split('.').last;
+                      if (type == 'svg') {
+                        return SvgPicture.asset(
+                          e.iconAsset!.path,
+                          package: e.iconAsset!.package,
+                          width: 16,
+                          height: 16,
+                          colorFilter: const ui.ColorFilter.mode(
+                            Colors.white,
+                            ui.BlendMode.srcIn,
                           ),
-                        )
-                      : null,
-                  padding: EdgeInsets.symmetric(vertical: getSquareSize(8), horizontal: getSquareSize(12)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        e.label,
-                        style: TextStyle(
-                          decoration: TextDecoration.none,
-                          color: colorTheme.primaryTextColor.withOpacity(0.94),
-                          fontSize: textStyle.standardText,
-                        ),
-                      ),
-                      Builder(builder: (ctx) {
-                        if (e.iconAsset != null) {
-                          final type = e.iconAsset!.path.split(".")[e.iconAsset!.path.split(".").length - 1];
-                          if (type == "svg") {
-                            return SvgPicture.asset(
-                              e.iconAsset!.path,
-                              package: e.iconAsset!.package,
-                              width: 16,
-                              height: 16,
-                              colorFilter: ui.ColorFilter.mode(
-                                colorTheme.primaryTextColor.withOpacity(0.9),
-                                ui.BlendMode.srcIn,
-                              ),
-                            );
-                          }
-                          return Image.asset(
-                            e.iconAsset!.path,
-                            package: e.iconAsset!.package,
-                            width: getFontSize(16),
-                            height: getFontSize(16),
-                            color: colorTheme.primaryTextColor.withOpacity(0.9),
-                          );
-                        }
-                        if (e.icon != null) {
-                          return Icon(
-                            e.icon,
-                            size: getFontSize(16),
-                          );
-                        }
-                        return Container();
-                      }),
-                    ],
+                        );
+                      }
+                      return Image.asset(
+                        e.iconAsset!.path,
+                        package: e.iconAsset!.package,
+                        width: getFontSize(16),
+                        height: getFontSize(16),
+                      );
+                    }
+
+                    if (e.icon != null) {
+                      return Icon(
+                        e.icon,
+                        size: getFontSize(16),
+                        color: Colors.white,
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  }),
+                  const SizedBox(height: 4),
+                  Text(
+                    e.label,
+                    style: TextStyle(
+                      decoration: TextDecoration.none,
+                      color: Colors.white,
+                      fontSize: textStyle.standardText,
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       );
     }
+
+    menuItems.add(
+      TableRow(children: cells),
+    );
 
     return menuItems;
   }
@@ -346,36 +348,21 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
   Widget _buildMobileMenuWidget({Key? key}) {
     return TencentCloudChatThemeWidget(
         build: (context, colorTheme, textStyle) => Material(
-              color: Colors.transparent,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minWidth: getWidth(200)),
-                child: Container(
-                  key: key,
-                  decoration: BoxDecoration(
-                    // boxShadow: const [
-                    //   BoxShadow(
-                    //     color: Color(0xCCbebebe),
-                    //     offset: Offset(2, 2),
-                    //     blurRadius: 10,
-                    //     spreadRadius: 1,
-                    //   ),
-                    // ],
-                    border: Border.all(
-                      width: 1,
-                      color: colorTheme.dividerColor,
-                    ),
-                    color: colorTheme.backgroundColor.withOpacity(0.8),
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  ),
-                  child: Table(
-                    columnWidths: const <int, TableColumnWidth>{
-                      0: IntrinsicColumnWidth(),
-                    },
-                    children: _buildMobileMenuItems(colorTheme: colorTheme, textStyle: textStyle),
-                  ),
-                ),
+          color: Colors.transparent,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: getWidth(260)),
+            child: Container(
+              key: key,
+              decoration: const BoxDecoration(
+                color: Color(0xff333333),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
-            ));
+              child: Table(
+                children: _buildMobileMenuItems(colorTheme: colorTheme, textStyle: textStyle),
+              ),
+            ),
+          ),
+        ));
   }
 
   void _cancelMobileMessageActions() {
@@ -451,19 +438,13 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
 
       double menuTop = messagePosition.dy + messageBox.size.height + 16 - messageOffset;
 
-      double menuLeft = textDirection == TextDirection.ltr
-          ? ((widget.data.message.isSelf ?? true)
-              ? messagePosition.dx + messageBox.size.width - _menuWidth!
-              : messagePosition.dx)
-          : ((widget.data.message.isSelf ?? true)
-              ? messagePosition.dx
-              : messagePosition.dx + messageBox.size.width - _menuWidth!);
+      final isSelf = widget.data.message.isSelf ?? true;
 
       double reactionBarLeft = textDirection == TextDirection.ltr
-          ? ((widget.data.message.isSelf ?? true)
+          ? (isSelf
           ? messagePosition.dx + messageBox.size.width - reactionBarWidth
           : messagePosition.dx)
-          : ((widget.data.message.isSelf ?? true)
+          : (isSelf
           ? messagePosition.dx
           : messagePosition.dx + messageBox.size.width - reactionBarWidth);
 
@@ -477,60 +458,59 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
             animation: _messageActionsAnimationController,
             builder: (BuildContext context, Widget? child) => TencentCloudChatThemeWidget(
                 build: (context, colorTheme, textStyle) => Stack(
-                      children: [
-                        AnimatedOpacity(
-                          opacity: _messageActionsAnimationController.value,
-                          duration: _messageActionsAnimationController.duration!,
-                          child: GestureDetector(
-                            onTap: () {
-                              _cancelMobileMessageActions();
-                            },
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                              child: Container(
-                                color: Colors.black.withOpacity(0.3),
+                  children: [
+                    AnimatedOpacity(
+                      opacity: _messageActionsAnimationController.value,
+                      duration: _messageActionsAnimationController.duration!,
+                      child: GestureDetector(
+                        onTap: _cancelMobileMessageActions,
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                          child: Container(
+                            color: Colors.black.withOpacity(0.3),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: messagePosition.dx,
+                      top: messageTopTween.value,
+                      child: ScaleTransition(
+                        alignment: Alignment.topCenter,
+                        scale: _overlayMessageScaleAnimation,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: messageSize.width,
+                            ),
+                            child: SelectionArea(
+                              child: widget.methods.getMessageItemWidget(
+                                renderOnMenuPreview: true,
                               ),
                             ),
                           ),
                         ),
-                        Positioned(
-                          left: messagePosition.dx,
-                          top: messageTopTween.value,
-                          child: ScaleTransition(
-                            alignment: Alignment.topCenter,
-                            scale: _overlayMessageScaleAnimation,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: messageSize.width,
-                                ),
-                                child: SelectionArea(
-                                  child: widget.methods.getMessageItemWidget(
-                                    renderOnMenuPreview: true,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                            left: menuLeft,
-                            top: menuTop,
-                            child: ScaleTransition(
-                              scale: _menuAnimation,
-                              child: _buildMobileMenuWidget(),
-                            )),
-                        Positioned(
-                          left: reactionBarLeft,
-                          top: reactionBarTop,
-                          child: ScaleTransition(
-                            scale: _menuAnimation,
-                            child: _buildReactionBar(),
-                          ),
-                        ),
-                      ],
-                    )));
+                      ),
+                    ),
+                    Positioned(
+                        left: isSelf ? null : 58,
+                        top: menuTop,
+                        right: isSelf ? 16 : null,
+                        child: ScaleTransition(
+                          scale: _menuAnimation,
+                          child: _buildMobileMenuWidget(),
+                        )),
+                    Positioned(
+                      left: reactionBarLeft,
+                      top: reactionBarTop,
+                      child: ScaleTransition(
+                        scale: _menuAnimation,
+                        child: _buildReactionBar(),
+                      ),
+                    ),
+                  ],
+                )));
       });
 
       safeSetState(() {
@@ -550,7 +530,7 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
     }
   }
 
-  _onLongPressMessageOnMobile() async {
+  Future<void> _onLongPressMessageOnMobile() async {
     if (widget.data.isMergeMessage) {
       return;
     }
@@ -598,7 +578,7 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
     _desktopMenuOverlayEntry = null;
   }
 
-  void _openDesktopMessageMenu(tapDownDetails) async {
+  void _openDesktopMessageMenu(Offset tapDownDetails) async {
     if (_desktopMenuOverlayEntry != null) {
       _removeDesktopMenu();
     }
@@ -622,31 +602,27 @@ class _TencentCloudChatMessageItemWithMenuState extends TencentCloudChatState<Te
     final tapDetails = tapDownDetails;
 
     final double menuDx = min(tapDetails.dx, screenWidth - (_menuWidth ?? 100));
-    final double menuDy = min(tapDetails.dy as double, screenHeight - (_menuHeight ?? 320)).toDouble();
+    final double menuDy = min(tapDetails.dy, screenHeight - (_menuHeight ?? 320)).toDouble();
 
-    final double reactionDx = min(screenWidth - (_reactionWidth ?? 254) , max(tapDetails.dx - (_reactionWidth ?? 254) + _menuWidth, (_reactionWidth ?? 254) + 4));
-    final double reactionDy = min((menuDy - (_reactionHeight ?? 50) - 4), max(tapDetails.dy - (_reactionHeight ?? 50) - 4, 8.toDouble()));
+    final double reactionDx = min(screenWidth - (_reactionWidth ?? 254) , max(tapDetails.dx - (_reactionWidth ?? 254) + (_menuWidth ?? 0), (_reactionWidth ?? 254) + 4));
+    final double reactionDy = min(menuDy - (_reactionHeight ?? 50) - 4, max(tapDetails.dy - (_reactionHeight ?? 50) - 4, 8.toDouble()));
 
     _desktopMenuOverlayEntry = OverlayEntry(
         builder: (context) => TencentCloudChatThemeWidget(
             build: (context, colorTheme, textStyle) => Stack(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        _removeDesktopMenu();
-                      },
-                      onSecondaryTap: () {
-                        _removeDesktopMenu();
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                      ),
-                    ),
-                    Positioned(left: menuDx, top: menuDy, child: _buildDesktopMenu()),
-                    Positioned(left: reactionDx, top: reactionDy, child: _buildReactionBar()),
+              children: [
+                GestureDetector(
+                  onTap: _removeDesktopMenu,
+                  onSecondaryTap: _removeDesktopMenu,
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
+                ),
+                Positioned(left: menuDx, top: menuDy, child: _buildDesktopMenu()),
+                Positioned(left: reactionDx, top: reactionDy, child: _buildReactionBar()),
 
-                  ],
-                )));
+              ],
+            )));
     Overlay.of(context).insert(_desktopMenuOverlayEntry!);
   }
 

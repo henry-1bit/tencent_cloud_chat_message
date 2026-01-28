@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:tencent_cloud_chat_common/tencent_cloud_chat.dart';
@@ -86,12 +85,7 @@ class _TencentCloudChatMessageMergeState extends TencentCloudChatMessageState<Te
             border: Border.all(
               color: sentFromSelf ? colorTheme.selfMessageBubbleBorderColor : colorTheme.othersMessageBubbleBorderColor,
             ),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(getSquareSize(16)),
-              topRight: Radius.circular(getSquareSize(16)),
-              bottomLeft: Radius.circular(getSquareSize(sentFromSelf ? 16 : 0)),
-              bottomRight: Radius.circular(getSquareSize(sentFromSelf ? 0 : 16)),
-            ),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,13 +108,13 @@ class _TencentCloudChatMessageMergeState extends TencentCloudChatMessageState<Te
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: textStyle.fontsize_12,
-                    color: colorTheme.othersMessageTextColor.withOpacity(0.5),
+                    color: colorTheme.othersMessageTextColor.withValues(alpha: 0.5),
                   ),
                 ),
               ).toList().sublist(0, displayLen)),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 4),
-                color: Colors.grey.withOpacity(0.3),
+                color: Colors.grey.withValues(alpha: 0.3),
                 height: 1,
               ),
               Row(
@@ -132,7 +126,7 @@ class _TencentCloudChatMessageMergeState extends TencentCloudChatMessageState<Te
                       tL10n.chatHistory,
                       style: TextStyle(
                         fontSize: textStyle.fontsize_12,
-                        color: colorTheme.othersMessageTextColor.withOpacity(0.5),
+                        color: colorTheme.othersMessageTextColor.withValues(alpha: 0.5),
                       )
                     ),
                   ),

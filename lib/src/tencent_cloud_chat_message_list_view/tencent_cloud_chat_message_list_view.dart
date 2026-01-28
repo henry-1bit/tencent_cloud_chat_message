@@ -143,7 +143,7 @@ class _TencentCloudChatMessageListViewState extends TencentCloudChatState<Tencen
                 determineIsLatestReadMessage: (index) {
                   final message = widget.data.messageList[index];
                   final messageKey = TencentCloudChatUtils.checkString(widget.data.groupID) != null
-                      ? int.tryParse(message.seq ?? "")
+                      ? int.tryParse(message.seq ?? '')
                       : message.timestamp;
                   if (TencentCloudChatUtils.checkString(widget.data.groupID) != null) {
                     return (messageKey == widget.data.groupReadSequence && widget.data.groupReadSequence != null, true);

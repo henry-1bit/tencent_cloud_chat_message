@@ -4,7 +4,6 @@ import 'package:tencent_cloud_chat_common/data/theme/text_style/text_style.dart'
 import 'package:tencent_cloud_chat_common/utils/tencent_cloud_chat_message_calling_message.dart';
 import 'package:tencent_cloud_chat_common/base/tencent_cloud_chat_theme_widget.dart';
 import 'package:tencent_cloud_chat_message/src/tencent_cloud_chat_message_widgets/tencent_cloud_chat_message_item.dart';
-import 'package:tencent_cloud_chat_common/tencent_cloud_chat.dart';
 import 'package:tencent_cloud_chat_message/src/model/tencent_cloud_chat_message_data_tools.dart';
 
 class TencentCloudChatMessageCustomC2CCall extends TencentCloudChatMessageItemBase {
@@ -47,8 +46,8 @@ class _TencentCloudChatMessageCustomC2CCallState extends TencentCloudChatMessage
               child: ImageIcon(
                 AssetImage(
                   callingMessage.streamMediaType == CallStreamMediaType.audio
-                    ? "lib/assets/voice_call.png"
-                    : "lib/assets/video_call.png",
+                      ? 'assets/icons/voice_call.png'
+                      : 'assets/icons/video_call.png',
                   package: 'tencent_cloud_chat_message',
                 ),
                 size: 16,
@@ -63,8 +62,8 @@ class _TencentCloudChatMessageCustomC2CCallState extends TencentCloudChatMessage
               child: ImageIcon(
                 AssetImage(
                   callingMessage.streamMediaType == CallStreamMediaType.audio
-                      ? "lib/assets/voice_call.png"
-                      : "lib/assets/video_call_self.png",
+                      ? 'assets/icons/voice_call.png'
+                      : 'assets/icons/video_call_self.png',
                   package: 'tencent_cloud_chat_message',
                 ),
                 size: 16,
@@ -90,14 +89,7 @@ class _TencentCloudChatMessageCustomC2CCallState extends TencentCloudChatMessage
               color:
               isMessageFromSelf ? colorTheme.selfMessageBubbleBorderColor : colorTheme.othersMessageBubbleBorderColor,
             ),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(getSquareSize(!isMessageFromSelf && widget.data.showMessageSenderName ? 0 : 16)),
-              topRight: Radius.circular(getSquareSize(isMessageFromSelf && widget.data.showMessageSenderName ? 0 : 16)),
-              bottomLeft:
-              Radius.circular(getSquareSize(!isMessageFromSelf && !widget.data.showMessageSenderName ? 0 : 16)),
-              bottomRight:
-              Radius.circular(getSquareSize(isMessageFromSelf && !widget.data.showMessageSenderName ? 0 : 16)),
-            )),
+            borderRadius: const BorderRadius.all(Radius.circular(8))),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

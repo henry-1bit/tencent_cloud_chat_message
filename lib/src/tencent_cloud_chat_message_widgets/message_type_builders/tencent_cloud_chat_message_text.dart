@@ -164,14 +164,7 @@ class _TencentCloudChatMessageTextState extends TencentCloudChatMessageState<Ten
               color:
                   sentFromSelf ? colorTheme.selfMessageBubbleBorderColor : colorTheme.othersMessageBubbleBorderColor,
             ),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(getSquareSize(!sentFromSelf && widget.data.showMessageSenderName ? 0 : 16)),
-              topRight: Radius.circular(getSquareSize(sentFromSelf && widget.data.showMessageSenderName ? 0 : 16)),
-              bottomLeft:
-                  Radius.circular(getSquareSize(!sentFromSelf && !widget.data.showMessageSenderName ? 0 : 16)),
-              bottomRight:
-                  Radius.circular(getSquareSize(sentFromSelf && !widget.data.showMessageSenderName ? 0 : 16)),
-            )),
+            borderRadius: const BorderRadius.all(Radius.circular(8))),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

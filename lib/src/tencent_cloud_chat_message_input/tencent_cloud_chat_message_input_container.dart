@@ -120,17 +120,17 @@ class _TencentCloudChatMessageInputContainerState extends TencentCloudChatState<
       final defaultOptions = [
         if (attachmentConfig.enableSendFile)
           TencentCloudChatMessageGeneralOptionItem(
-              iconAsset: (path: "lib/assets/send_file.svg", package: "tencent_cloud_chat_message"),
+              iconAsset: (path: "assets/icons/send_file.svg", package: "tencent_cloud_chat_message"),
               label: tL10n.file,
               onTap: _sendFileFromExplorer),
         if (attachmentConfig.enableSendImage)
           TencentCloudChatMessageGeneralOptionItem(
-              iconAsset: (path: "lib/assets/send_image.svg", package: "tencent_cloud_chat_message"),
+              iconAsset: (path: "assets/icons/send_image.svg", package: "tencent_cloud_chat_message"),
               label: tL10n.image,
               onTap: _sendImage),
         if (attachmentConfig.enableSendVideo)
           TencentCloudChatMessageGeneralOptionItem(
-              iconAsset: (path: "lib/assets/send_video.svg", package: "tencent_cloud_chat_message"),
+              iconAsset: (path: "assets/icons/send_video.svg", package: "tencent_cloud_chat_message"),
               label: tL10n.video,
               onTap: ({Offset? offset}) => _sendMediaFromExplorer(
                     offset: offset,
@@ -138,7 +138,7 @@ class _TencentCloudChatMessageInputContainerState extends TencentCloudChatState<
                   )),
         if (attachmentConfig.enableSearch && _searchWidget != null)
           TencentCloudChatMessageGeneralOptionItem(
-            iconAsset: (path: "lib/assets/message_search.svg", package: "tencent_cloud_chat_message"),
+            iconAsset: (path: "assets/icons/message_search.svg", package: "tencent_cloud_chat_message"),
             label: tL10n.search,
             onTap: ({Offset? offset}) => _showMessageSearch(),
           ),
@@ -152,7 +152,7 @@ class _TencentCloudChatMessageInputContainerState extends TencentCloudChatState<
         defaultOptions.insert(
             0,
             TencentCloudChatMessageGeneralOptionItem(
-                iconAsset: (path: "lib/assets/send_face.svg", package: "tencent_cloud_chat_message"),
+                iconAsset: (path: "assets/icons/send_face.svg", package: "tencent_cloud_chat_message"),
                 label: tL10n.sticker,
                 onTap: _openStickerPanel));
       }
@@ -161,12 +161,12 @@ class _TencentCloudChatMessageInputContainerState extends TencentCloudChatState<
       final defaultOptions = [
         if (attachmentConfig.enableSendFile)
           TencentCloudChatMessageGeneralOptionItem(
-              iconAsset: (path: "lib/assets/send_file.svg", package: "tencent_cloud_chat_message"),
+              iconAsset: (path: "assets/icons/send_file.svg", package: "tencent_cloud_chat_message"),
               label: tL10n.file,
               onTap: _sendFileFromExplorer),
         if (attachmentConfig.enableSendMediaFromMobileGallery)
           TencentCloudChatMessageGeneralOptionItem(
-              iconAsset: (path: "lib/assets/send_image.svg", package: "tencent_cloud_chat_message"),
+              iconAsset: (path: "assets/icons/send_image.svg", package: "tencent_cloud_chat_message"),
               label: tL10n.album,
               onTap: _sendMediaFromGallery),
         if (TencentCloudChat.instance.dataInstance.basic.useCallKit)

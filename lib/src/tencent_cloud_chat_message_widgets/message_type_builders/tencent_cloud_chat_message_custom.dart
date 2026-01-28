@@ -28,7 +28,7 @@ class _TencentCloudChatMessageCustomState
   Widget? robotWidget;
   Widget? customerServiceWidget;
 
-  renderVoteMessage(TencentCloudChatThemeColors colorTheme,
+  Widget? renderVoteMessage(TencentCloudChatThemeColors colorTheme,
       TencentCloudChatTextStyle textStyle) {
     if (voteWidget == null) {
       return Container();
@@ -36,7 +36,7 @@ class _TencentCloudChatMessageCustomState
     return voteWidget;
   }
 
-  renderRobotMessage(TencentCloudChatThemeColors colorTheme,
+  Widget? renderRobotMessage(TencentCloudChatThemeColors colorTheme,
       TencentCloudChatTextStyle textStyle) {
     if (robotWidget == null) {
       return Container();
@@ -44,7 +44,7 @@ class _TencentCloudChatMessageCustomState
     return robotWidget;
   }
 
-  renderCustomerServiceMessage(TencentCloudChatThemeColors colorTheme,
+  Widget? renderCustomerServiceMessage(TencentCloudChatThemeColors colorTheme,
       TencentCloudChatTextStyle textStyle) {
     if (customerServiceWidget == null) {
       return Container();
@@ -52,23 +52,23 @@ class _TencentCloudChatMessageCustomState
     return customerServiceWidget;
   }
 
-  getWidgetFromPlugin() async {
+  Future<void> getWidgetFromPlugin() async {
     if (isVoteMessage) {
-      if (TencentCloudChat.instance.dataInstance.basic.hasPlugins('poll')) {
-        var plugin =
-            TencentCloudChat.instance.dataInstance.basic.getPlugin('poll');
+      if (TencentCloudChat.instance.dataInstance.basic.hasPlugins('poll') == true) {
+        final plugin =
+        TencentCloudChat.instance.dataInstance.basic.getPlugin('poll');
         if (plugin != null) {
-          var voteMsg = await plugin.pluginInstance.getWidget(
-            methodName: "voteMessageItem",
+          final voteMsg = await plugin.pluginInstance.getWidget(
+            methodName: 'voteMessageItem',
             data: Map.from(
               {
-                "message": json.encode(widget.data.message.toJson()),
+                'message': json.encode(widget.data.message.toJson()),
               },
             ),
             fns: Map<String, TencentCloudChatPluginTapFn>.from(
               {
-                "onTap": plugin.tapFn ??
-                    (Map<String, String> data) {
+                'onTap': plugin.tapFn ??
+                        (Map<String, String> data) {
                       return true;
                     }
               },
@@ -84,20 +84,20 @@ class _TencentCloudChatMessageCustomState
     }
     if (isRobotMessage) {
       if (TencentCloudChat.instance.dataInstance.basic.hasPlugins('robot')) {
-        var plugin =
+        final plugin =
             TencentCloudChat.instance.dataInstance.basic.getPlugin('robot');
         if (plugin != null) {
-          var robotMsg = await plugin.pluginInstance.getWidget(
-            methodName: "robotMessageItem",
+          final robotMsg = await plugin.pluginInstance.getWidget(
+            methodName: 'robotMessageItem',
             data: Map.from(
               {
-                "message": json.encode(widget.data.message.toJson()),
+                'message': json.encode(widget.data.message.toJson()),
               },
             ),
             fns: Map<String, TencentCloudChatPluginTapFn>.from(
               {
-                "onTap": plugin.tapFn ??
-                    (Map<String, String> data) {
+                'onTap': plugin.tapFn ??
+                        (Map<String, String> data) {
                       return true;
                     }
               },
@@ -114,20 +114,20 @@ class _TencentCloudChatMessageCustomState
     if (isCustomerServiceMessage) {
       if (TencentCloudChat.instance.dataInstance.basic
           .hasPlugins('customerService')) {
-        var plugin = TencentCloudChat.instance.dataInstance.basic
+        final plugin = TencentCloudChat.instance.dataInstance.basic
             .getPlugin('customerService');
         if (plugin != null) {
-          var customerServiceMsg = plugin.pluginInstance.getWidgetSync(
-            methodName: "customerServiceMessageItem",
+          final customerServiceMsg = plugin.pluginInstance.getWidgetSync(
+            methodName: 'customerServiceMessageItem',
             data: Map.from(
               {
-                "message": json.encode(widget.data.message.toJson()),
+                'message': json.encode(widget.data.message.toJson()),
               },
             ),
             fns: Map<String, TencentCloudChatPluginTapFn>.from(
               {
-                "onTap": plugin.tapFn ??
-                    (Map<String, String> data) {
+                'onTap': plugin.tapFn ??
+                        (Map<String, String> data) {
                       return true;
                     }
               },
@@ -160,7 +160,7 @@ class _TencentCloudChatMessageCustomState
     getWidgetFromPlugin();
   }
 
-  Widget getFinalRenderWidget(TencentCloudChatThemeColors colorTheme,
+  Widget? getFinalRenderWidget(TencentCloudChatThemeColors colorTheme,
       TencentCloudChatTextStyle textStyle) {
     if (isVoteMessage) {
       return renderVoteMessage(colorTheme, textStyle);
@@ -173,7 +173,7 @@ class _TencentCloudChatMessageCustomState
     }
 
     final (String lineOne, String? lineTwo) =
-        TencentCloudChatUtils.handleCustomMessage(widget.data.message);
+    TencentCloudChatUtils.handleCustomMessage(widget.data.message);
     if (lineTwo == null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -208,9 +208,9 @@ class _TencentCloudChatMessageCustomState
                 lineTwo,
                 style: TextStyle(
                     color: (sentFromSelf
-                            ? colorTheme.selfMessageTextColor
-                            : colorTheme.othersMessageTextColor)
-                        .withOpacity(0.9),
+                        ? colorTheme.selfMessageTextColor
+                        : colorTheme.othersMessageTextColor)
+                        .withValues(alpha: 0.9),
                     fontSize: textStyle.messageBody - 1),
               )
             ],
@@ -257,12 +257,7 @@ class _TencentCloudChatMessageCustomState
                 ? colorTheme.selfMessageBubbleBorderColor
                 : colorTheme.othersMessageBubbleBorderColor,
           ),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(getSquareSize(16)),
-            topRight: Radius.circular(getSquareSize(16)),
-            bottomLeft: Radius.circular(getSquareSize(sentFromSelf ? 16 : 0)),
-            bottomRight: Radius.circular(getSquareSize(sentFromSelf ? 0 : 16)),
-          ),
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

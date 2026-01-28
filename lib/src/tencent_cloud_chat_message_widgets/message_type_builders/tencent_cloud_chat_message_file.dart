@@ -68,7 +68,7 @@ class _TencentCloudChatMessageFileState extends TencentCloudChatMessageState<Ten
 
   TimFileCurrentRenderInfo? currentRenderSoundInfo;
 
-  console(String log) {
+  void console(String log) {
     TencentCloudChat.instance.logInstance.console(
       componentName: _tag,
       logs: json.encode(
@@ -99,7 +99,7 @@ class _TencentCloudChatMessageFileState extends TencentCloudChatMessageState<Ten
     );
   }
 
-  addDownloadMessageToQueue() {
+  void addDownloadMessageToQueue() {
     if (hasLocalFile()) {
       console("has local url. download break");
       return;
@@ -158,20 +158,20 @@ class _TencentCloudChatMessageFileState extends TencentCloudChatMessageState<Ten
     return res;
   }
 
-  getLocalUrl() {
+  String getLocalUrl() {
     if (TencentCloudChatUtils.checkString(widget.data.message.fileElem!.localUrl) == null) {
       if (currentdownload != null) {
-        return currentdownload?.path;
+        return currentdownload?.path ?? '';
       }
     }
     return widget.data.message.fileElem!.localUrl!;
   }
 
-  getLocalPath() {
+  String getLocalPath() {
     return widget.data.message.fileElem!.path!;
   }
 
-  getFileUrl() async {
+  Future<void> getFileUrl() async {
     if (TencentCloudChatUtils.checkString(widget.data.message.msgID) != null) {
       // check if exits local url. if not get online url
       bool hasLocal = hasLocalFile();
@@ -219,7 +219,7 @@ class _TencentCloudChatMessageFileState extends TencentCloudChatMessageState<Ten
     }
   }
 
-  getFileExt() {
+  String getFileExt() {
     String ext = '';
     if (widget.data.message.fileElem != null) {
       String fileName = widget.data.message.fileElem!.fileName ?? "";
@@ -230,7 +230,7 @@ class _TencentCloudChatMessageFileState extends TencentCloudChatMessageState<Ten
     return ext;
   }
 
-  fileIconWidget(TencentCloudChatThemeColors colorTheme, TencentCloudChatTextStyle textStyle) {
+  TencentCloudChatFileIcon fileIconWidget(TencentCloudChatThemeColors colorTheme, TencentCloudChatTextStyle textStyle) {
     String ext = getFileExt();
     return TencentCloudChatFileIcon(
       size: getSquareSize(22),
@@ -239,7 +239,7 @@ class _TencentCloudChatMessageFileState extends TencentCloudChatMessageState<Ten
     );
   }
 
-  fileNameWidget(TencentCloudChatThemeColors colorTheme, TencentCloudChatTextStyle textStyle) {
+  Expanded fileNameWidget(TencentCloudChatThemeColors colorTheme, TencentCloudChatTextStyle textStyle) {
     var fileName = '';
     if (widget.data.message.fileElem != null) {
       fileName = widget.data.message.fileElem!.fileName ?? "";
@@ -307,13 +307,13 @@ class _TencentCloudChatMessageFileState extends TencentCloudChatMessageState<Ten
 
   int onTapDownTime = 0;
 
-  onTapDown(TapDownDetails details) {
+  void onTapDown(TapDownDetails details) {
     if (!widget.data.inSelectMode) {
       onTapDownTime = DateTime.now().millisecondsSinceEpoch;
     }
   }
 
-  onTapUp(TapUpDetails details) {
+  void onTapUp(TapUpDetails details) {
     if (widget.data.inSelectMode) {
       return;
     }
@@ -634,12 +634,7 @@ class _TencentCloudChatMessageFileState extends TencentCloudChatMessageState<Ten
           border: Border.all(
             color: sentFromSelf ? colorTheme.selfMessageBubbleBorderColor : colorTheme.othersMessageBubbleBorderColor,
           ),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(getSquareSize(16)),
-            topRight: Radius.circular(getSquareSize(16)),
-            bottomLeft: Radius.circular(getSquareSize(sentFromSelf ? 16 : 0)),
-            bottomRight: Radius.circular(getSquareSize(sentFromSelf ? 0 : 16)),
-          ),
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

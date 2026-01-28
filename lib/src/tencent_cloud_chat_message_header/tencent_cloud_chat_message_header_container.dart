@@ -4,8 +4,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:tencent_cloud_chat_common/components/components_definition/tencent_cloud_chat_component_builder_definitions.dart';
-import 'package:tencent_cloud_chat_common/data/conversation/tencent_cloud_chat_conversation_data.dart';
-import 'package:tencent_cloud_chat_common/eventbus/tencent_cloud_chat_eventbus.dart';
 import 'package:tencent_cloud_chat_common/tencent_cloud_chat.dart';
 import 'package:tencent_cloud_chat_common/tuicore/tencent_cloud_chat_core.dart';
 import 'package:tencent_cloud_chat_common/utils/tencent_cloud_chat_utils.dart';
@@ -13,9 +11,7 @@ import 'package:tencent_cloud_chat_common/base/tencent_cloud_chat_state_widget.d
 import 'package:tencent_cloud_chat_common/widgets/group_member_selector/tencent_cloud_chat_group_member_selector.dart';
 import 'package:tencent_cloud_chat_message/src/model/tencent_cloud_chat_message_separate_data.dart';
 import 'package:tencent_cloud_chat_message/src/model/tencent_cloud_chat_message_separate_data_notifier.dart';
-import 'package:tencent_cloud_chat_message/src/tencent_cloud_chat_message_header/tencent_cloud_chat_message_header_actions.dart';
 import 'package:tencent_cloud_chat_message/src/tencent_cloud_chat_message_header/tencent_cloud_chat_message_header_info.dart';
-import 'package:tencent_cloud_chat_message/src/tencent_cloud_chat_message_header/tencent_cloud_chat_message_header_profile_image.dart';
 import 'package:tencent_cloud_chat_message/src/tencent_cloud_chat_message_header/tencent_cloud_chat_message_header_select_mode.dart';
 
 class _PreferredAppBarSize extends Size {
@@ -135,7 +131,7 @@ class _TencentCloudChatMessageHeaderContainerState
     return res;
   }
 
-  _startVideoCall() async {
+  Future<void> _startVideoCall() async {
     final useCallKit = TencentCloudChat.instance.dataInstance.basic.useCallKit;
     if (useCallKit) {
       if (TencentCloudChatUtils.checkString(widget.groupID) != null) {
@@ -160,7 +156,7 @@ class _TencentCloudChatMessageHeaderContainerState
     }
   }
 
-  _startVoiceCall() async {
+  Future<void> _startVoiceCall() async {
     final useCallKit = TencentCloudChat.instance.dataInstance.basic.useCallKit;
     if (useCallKit) {
       if (TencentCloudChatUtils.checkString(widget.groupID) != null) {
@@ -200,59 +196,61 @@ class _TencentCloudChatMessageHeaderContainerState
         builder: (BuildContext context, AsyncSnapshot<V2TimConversation> snapshot) {
           final conversation = snapshot.data ?? dataProvider.conversation;
           return dataProvider.messageBuilders?.getMessageHeader(
-                data: MessageHeaderBuilderData(
-                  selectAmount: _selectAmount,
-                  inSelectMode: _inSelectMode,
-                  userID: widget.userID,
-                  topicID: widget.topicID,
-                  groupID: widget.groupID,
-                  conversation: conversation,
-                  showUserOnlineStatus:
-                      TencentCloudChat.instance.dataInstance.basic.userConfig.useUserOnlineStatus ?? true,
-                ),
-                methods: MessageHeaderBuilderMethods(
-                  getUserOnlineStatus: ({required String userID}) {
-                    return TencentCloudChat.instance.dataInstance.contact.getOnlineStatusByUserId(userID: userID);
-                  },
-                  getGroupMembersInfo: _getGroupMembersInfo,
-                  controller: dataProvider.messageController,
-                  onCancelSelect: () => dataProvider.inSelectMode = false,
-                  onClearSelect: () => dataProvider.selectedMessages = [],
-                  startVideoCall: _startVideoCall,
-                  startVoiceCall: _startVoiceCall,
-                ),
-                widgets: MessageHeaderBuilderWidgets(
-                  messageHeaderProfileImage: TencentCloudChatMessageHeaderProfileImage(
-                    getGroupMembersInfo: _getGroupMembersInfo,
-                    conversation: conversation,
-                    startVideoCall: _startVideoCall,
-                    startVoiceCall: _startVoiceCall,
-                  ),
-                  messageHeaderInfo: TencentCloudChatMessageHeaderInfo(
-                    conversation: conversation,
-                    userID: widget.userID,
-                    groupID: widget.groupID,
-                    showName: TencentCloudChatUtils.checkString(conversation?.showName) ?? widget.userID ?? tL10n.chat,
-                    showUserOnlineStatus:
-                        TencentCloudChat.instance.dataInstance.basic.userConfig.useUserOnlineStatus ?? true,
-                    getUserOnlineStatus: ({required String userID}) {
-                      return TencentCloudChat.instance.dataInstance.contact.getOnlineStatusByUserId(userID: userID);
-                    },
-                    getGroupMembersInfo: _getGroupMembersInfo,
-                  ),
-                  messageHeaderActions: TencentCloudChatMessageHeaderActions(
-                    startVoiceCall: _startVoiceCall,
-                    startVideoCall: _startVideoCall,
-                    useCallKit: useCallKit,
-                  ),
-                  messageHeaderMessagesSelectMode: TencentCloudChatMessageHeaderSelectMode(
-                    key: ValueKey<bool>(_inSelectMode),
-                    selectAmount: _selectAmount,
-                    onCancelSelect: () => dataProvider.inSelectMode = false,
-                    onClearSelect: () => dataProvider.selectedMessages = [],
-                  ),
-                ),
-              ) ??
+            data: MessageHeaderBuilderData(
+              selectAmount: _selectAmount,
+              inSelectMode: _inSelectMode,
+              userID: widget.userID,
+              topicID: widget.topicID,
+              groupID: widget.groupID,
+              conversation: conversation,
+              showUserOnlineStatus:
+              TencentCloudChat.instance.dataInstance.basic.userConfig.useUserOnlineStatus ?? true,
+            ),
+            methods: MessageHeaderBuilderMethods(
+              getUserOnlineStatus: ({required String userID}) {
+                return TencentCloudChat.instance.dataInstance.contact.getOnlineStatusByUserId(userID: userID);
+              },
+              getGroupMembersInfo: _getGroupMembersInfo,
+              controller: dataProvider.messageController,
+              onCancelSelect: () => dataProvider.inSelectMode = false,
+              onClearSelect: () => dataProvider.selectedMessages = [],
+              startVideoCall: _startVideoCall,
+              startVoiceCall: _startVoiceCall,
+            ),
+            widgets: MessageHeaderBuilderWidgets(
+              // messageHeaderProfileImage: TencentCloudChatMessageHeaderProfileImage(
+              //   getGroupMembersInfo: _getGroupMembersInfo,
+              //   conversation: conversation,
+              //   startVideoCall: _startVideoCall,
+              //   startVoiceCall: _startVoiceCall,
+              // ),
+              messageHeaderProfileImage: const SizedBox.shrink(),
+              messageHeaderInfo: TencentCloudChatMessageHeaderInfo(
+                conversation: conversation,
+                userID: widget.userID,
+                groupID: widget.groupID,
+                showName: TencentCloudChatUtils.checkString(conversation?.showName) ?? widget.userID ?? tL10n.chat,
+                showUserOnlineStatus:
+                TencentCloudChat.instance.dataInstance.basic.userConfig.useUserOnlineStatus ?? true,
+                getUserOnlineStatus: ({required String userID}) {
+                  return TencentCloudChat.instance.dataInstance.contact.getOnlineStatusByUserId(userID: userID);
+                },
+                getGroupMembersInfo: _getGroupMembersInfo,
+              ),
+              // messageHeaderActions: TencentCloudChatMessageHeaderActions(
+              //   startVoiceCall: _startVoiceCall,
+              //   startVideoCall: _startVideoCall,
+              //   useCallKit: useCallKit,
+              // ),
+              messageHeaderActions: const SizedBox(),
+              messageHeaderMessagesSelectMode: TencentCloudChatMessageHeaderSelectMode(
+                key: ValueKey<bool>(_inSelectMode),
+                selectAmount: _selectAmount,
+                onCancelSelect: () => dataProvider.inSelectMode = false,
+                onClearSelect: () => dataProvider.selectedMessages = [],
+              ),
+            ),
+          ) ??
               Container();
         });
   }

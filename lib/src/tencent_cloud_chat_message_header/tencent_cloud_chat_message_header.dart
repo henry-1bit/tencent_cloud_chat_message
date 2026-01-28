@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tencent_cloud_chat_common/components/components_definition/tencent_cloud_chat_component_builder_definitions.dart';
 import 'package:tencent_cloud_chat_common/cross_platforms_adapter/tencent_cloud_chat_screen_adapter.dart';
 import 'package:tencent_cloud_chat_common/base/tencent_cloud_chat_theme_widget.dart';
+import 'package:tencent_cloud_chat_common/data/theme/color/color_base.dart';
+import 'package:tencent_cloud_chat_common/data/theme/text_style/text_style.dart';
 import 'package:tencent_cloud_chat_common/tencent_cloud_chat_common.dart';
 
 class TencentCloudChatMessageHeader extends StatefulWidget {
@@ -17,39 +19,43 @@ class TencentCloudChatMessageHeader extends StatefulWidget {
   });
 
   @override
-  State<TencentCloudChatMessageHeader> createState() =>
-      _TencentCloudChatMessageHeaderState();
+  State<TencentCloudChatMessageHeader> createState() => _TencentCloudChatMessageHeaderState();
 }
 
-class _TencentCloudChatMessageHeaderState
-    extends TencentCloudChatState<TencentCloudChatMessageHeader> {
-  final isDesktop = TencentCloudChatScreenAdapter.deviceScreenType ==
-      DeviceScreenType.desktop;
+class _TencentCloudChatMessageHeaderState extends TencentCloudChatState<TencentCloudChatMessageHeader> {
+  final isDesktop = TencentCloudChatScreenAdapter.deviceScreenType == DeviceScreenType.desktop;
 
   Widget buildNormalHeader(
-      colorTheme, textStyle, V2TimConversation? conversation) {
+      TencentCloudChatThemeColors colorTheme,
+      TencentCloudChatTextStyle textStyle,
+      V2TimConversation? conversation,
+      ) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: isDesktop ? 8 : 0),
       child: Row(
         key: ValueKey<bool>(widget.data.inSelectMode),
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Row(
               children: [
                 if (!isDesktop)
                   IconButton(
-                      color: colorTheme.primaryColor,
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_ios_rounded)),
+                    color: colorTheme.primaryColor,
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_rounded,
+                      size: 16,
+                    ),
+                  ),
                 widget.widgets.messageHeaderProfileImage,
-                SizedBox(
-                  width: getWidth(isDesktop ? 12 : 8),
-                ),
                 Expanded(
                   child: widget.widgets.messageHeaderInfo,
                 ),
+                if (!isDesktop)
+                  SizedBox(
+                    width: getWidth(48),
+                  ),
               ],
             ),
           ),
@@ -74,11 +80,7 @@ class _TencentCloudChatMessageHeaderState
           right: getSquareSize(10),
           bottom: widget.data.inSelectMode ? 0.0 : getSquareSize(10),
         ),
-        decoration: BoxDecoration(
-          border:
-          Border(bottom: BorderSide(color: colorTheme.dividerColor)),
-          color: colorTheme.backgroundColor,
-        ),
+        color: colorTheme.appBarBackgroundColor,
         child: AnimatedSwitcher(
           switchInCurve: Curves.ease,
           switchOutCurve: Curves.ease,

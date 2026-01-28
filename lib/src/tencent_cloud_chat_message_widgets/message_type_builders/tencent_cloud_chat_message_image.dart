@@ -51,9 +51,9 @@ class ImageCurrentRenderInfo {
 
 class TencentCloudChatMessageImage extends TencentCloudChatMessageItemBase {
   const TencentCloudChatMessageImage({
-    super.key,
     required super.data,
     required super.methods,
+    super.key,
   });
 
   @override
@@ -65,7 +65,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
   void didUpdateWidget(covariant TencentCloudChatMessageImage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.data.sendingMessageData != null) {
-      if ((oldWidget.data.sendingMessageData == null || !oldWidget.data.sendingMessageData!.isSendComplete || oldWidget.data.sendingMessageData!.progress != 100) &&
+      if ((oldWidget.data.sendingMessageData == null ||
+          !oldWidget.data.sendingMessageData!.isSendComplete ||
+          oldWidget.data.sendingMessageData!.progress != 100) &&
           widget.data.sendingMessageData != null &&
           widget.data.sendingMessageData!.isSendComplete) {
         _getImageUrl();
@@ -73,7 +75,8 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
     }
   }
 
-  final Stream<TencentCloudChatMessageData<dynamic>>? _messageDataStream = TencentCloudChat.instance.eventBusInstance.on<TencentCloudChatMessageData<dynamic>>("TencentCloudChatMessageData");
+  final Stream<TencentCloudChatMessageData<dynamic>>? _messageDataStream = TencentCloudChat.instance.eventBusInstance
+      .on<TencentCloudChatMessageData<dynamic>>("TencentCloudChatMessageData");
   late StreamSubscription<TencentCloudChatMessageData<dynamic>>? __messageDataSubscription;
   final String _tag = "TencentCloudChatMessageImage";
 
@@ -86,7 +89,7 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
 
   ImageCurrentRenderInfo? currentRenderImageInfo;
 
-  console(String log) {
+  void console(String log) {
     TencentCloudChat.instance.logInstance.console(
       componentName: _tag,
       logs: json.encode(
@@ -119,7 +122,7 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
     );
   }
 
-  addDownloadMessageToQueue({
+  void addDownloadMessageToQueue({
     required bool isOrigin,
   }) {
     if (isSendingMessage()) {
@@ -135,7 +138,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
 
     if (TencentCloudChatUtils.checkString(widget.data.message.msgID) != null) {
       String key = TencentCloudChatUtils.checkString(widget.data.message.userID) ?? widget.data.message.groupID ?? "";
-      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null ? ConversationType.V2TIM_GROUP : ConversationType.V2TIM_C2C;
+      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null
+          ? ConversationType.V2TIM_GROUP
+          : ConversationType.V2TIM_C2C;
       if (key.isEmpty) {
         console("add to download queue error. key is empty.");
         return;
@@ -239,7 +244,7 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
     return res;
   }
 
-  _getImageUrl() async {
+  Future<void> _getImageUrl() async {
     if (TencentCloudChatUtils.checkString(widget.data.message.msgID) != null) {
       // check if exits local url . if not get online url
 
@@ -247,7 +252,10 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
       bool hasClientPath = await hasSelfClientPath();
       console("hasLocal: $hasLocal, hasClientPath: $hasClientPath");
       if (hasClientPath) {
-        var imageInfo = ImageCurrentRenderInfo(path: widget.data.message.imageElem!.path!, type: ImageCurrentRenderType.path);
+        var imageInfo = ImageCurrentRenderInfo(
+          path: widget.data.message.imageElem!.path!,
+          type: ImageCurrentRenderType.path,
+        );
         safeSetState(() {
           currentRenderImageInfo = imageInfo;
         });
@@ -304,7 +312,7 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
     );
   }
 
-  getLoadingWidget() {
+  Container getLoadingWidget() {
     double placeholderWidth = min(widget.data.messageRowWidth * 0.7, 198).toDouble();
     double placeholderHeight = placeholderWidth * 1.33;
     return Container(
@@ -332,7 +340,7 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
     );
   }
 
-  getErrorWidget() {
+  Widget getErrorWidget() {
     console("render image error");
     double placeholderWidth = min(widget.data.messageRowWidth * 0.7, 198).toDouble();
     double placeholderHeight = placeholderWidth * 1.33;
@@ -380,25 +388,27 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
         bottomRight: Radius.circular(getSquareSize(sentFromSelf ? 0 : 16)),
       ),
       child: CachedNetworkImage(
-          key: ValueKey(onlineRenderKey),
-          imageUrl: url,
-          fit: BoxFit.cover,
-          width: min(widget.data.messageRowWidth * 0.7, 198),
-          errorWidget: (context, error, stackTrace) {
-            console("network image render failed. please check the path is right. url: $url");
-            onlineRenderResult = false;
-            return getErrorWidget();
-          },
-          progressIndicatorBuilder: (context, child, loadingProgress) {
-            return getLoadingWidget();
-          },
-        ),
+        key: ValueKey(onlineRenderKey),
+        imageUrl: url,
+        fit: BoxFit.cover,
+        width: min(widget.data.messageRowWidth * 0.7, 198),
+        errorWidget: (context, error, stackTrace) {
+          console("network image render failed. please check the path is right. url: $url");
+          onlineRenderResult = false;
+          return getErrorWidget();
+        },
+        progressIndicatorBuilder: (context, child, loadingProgress) {
+          return getLoadingWidget();
+        },
+      ),
     );
   }
 
-  showImage() {
+  void showImage() {
     String convkey = TencentCloudChatUtils.checkString(widget.data.message.userID) ?? widget.data.message.groupID ?? "";
-    int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null ? ConversationType.V2TIM_GROUP : ConversationType.V2TIM_C2C;
+    int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null
+        ? ConversationType.V2TIM_GROUP
+        : ConversationType.V2TIM_C2C;
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -414,13 +424,13 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
 
   int onTapDownTime = 0;
 
-  onTapDown(TapDownDetails details) {
+  void onTapDown(TapDownDetails details) {
     if (!widget.data.inSelectMode) {
       onTapDownTime = DateTime.now().millisecondsSinceEpoch;
     }
   }
 
-  onTapUp(TapUpDetails details) {
+  void onTapUp(TapUpDetails details) {
     if (widget.data.inSelectMode) {
       return;
     }
@@ -437,7 +447,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
   }
 
   Widget renderImage() {
-    if (!TencentCloudChatPlatformAdapter().isWeb && (currentRenderImageInfo?.type == ImageCurrentRenderType.path || currentRenderImageInfo?.type == ImageCurrentRenderType.local)) {
+    if (!TencentCloudChatPlatformAdapter().isWeb &&
+        (currentRenderImageInfo?.type == ImageCurrentRenderType.path ||
+            currentRenderImageInfo?.type == ImageCurrentRenderType.local)) {
       return GestureDetector(
         onTapDown: onTapDown,
         onTapUp: onTapUp,
@@ -495,7 +507,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
   handleDownloadEvent(TencentCloudChatMessageData data) {
     if (data.currentUpdatedFields == TencentCloudChatMessageDataKeys.downloadMessage) {
       String key = TencentCloudChatUtils.checkString(widget.data.message.userID) ?? widget.data.message.groupID ?? "";
-      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null ? ConversationType.V2TIM_GROUP : ConversationType.V2TIM_C2C;
+      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null
+          ? ConversationType.V2TIM_GROUP
+          : ConversationType.V2TIM_C2C;
       if (key.isEmpty) {
         console("add to download queue error. key is empty.");
         return false;
@@ -507,7 +521,11 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
         type = ImageType.origin.index;
       }
 
-      int idx = data.currentDownloadMessage.indexWhere((ele) => ele.getUniqueueKey() == generateDownloadData(type: type, conversationType: conversationType, key: key).getUniqueueKey());
+      int idx = data.currentDownloadMessage.indexWhere(
+            (ele) =>
+        ele.getUniqueueKey() ==
+            generateDownloadData(type: type, conversationType: conversationType, key: key).getUniqueueKey(),
+      );
 
       if (idx > -1) {
         safeSetState(() {
@@ -515,11 +533,11 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
         });
       }
     } else if (data.currentUpdatedFields == TencentCloudChatMessageDataKeys.networkConnectSuccess) {
-        if (onlineRenderResult != null && onlineRenderResult == false) {
-          onlineRenderResult = true;
-          onlineRenderKey++;
-          _getImageUrl();
-        }
+      if (onlineRenderResult != null && onlineRenderResult == false) {
+        onlineRenderResult = true;
+        onlineRenderKey++;
+        _getImageUrl();
+      }
     }
   }
 
@@ -530,7 +548,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
   bool isDownloading() {
     if (TencentCloudChatUtils.checkString(widget.data.message.msgID) != null) {
       String key = TencentCloudChatUtils.checkString(widget.data.message.userID) ?? widget.data.message.groupID ?? "";
-      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null ? ConversationType.V2TIM_GROUP : ConversationType.V2TIM_C2C;
+      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null
+          ? ConversationType.V2TIM_GROUP
+          : ConversationType.V2TIM_C2C;
       if (key.isEmpty) {
         console("add to download queue error. key is empty.");
         return false;
@@ -542,7 +562,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
         type = ImageType.origin.index;
         console("thumb has been download . download origin local");
       }
-      return TencentCloudChatDownloadUtils.isDownloading(data: generateDownloadData(type: type, conversationType: conversationType, key: key));
+      return TencentCloudChatDownloadUtils.isDownloading(
+        data: generateDownloadData(type: type, conversationType: conversationType, key: key),
+      );
     }
     return false;
   }
@@ -550,7 +572,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
   bool isInDownloadQueue() {
     if (TencentCloudChatUtils.checkString(widget.data.message.msgID) != null) {
       String key = TencentCloudChatUtils.checkString(widget.data.message.userID) ?? widget.data.message.groupID ?? "";
-      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null ? ConversationType.V2TIM_GROUP : ConversationType.V2TIM_C2C;
+      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null
+          ? ConversationType.V2TIM_GROUP
+          : ConversationType.V2TIM_C2C;
       if (key.isEmpty) {
         console("add to download queue error. key is empty.");
         return false;
@@ -562,7 +586,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
         type = ImageType.origin.index;
         console("thumb has been download . download origin local");
       }
-      return TencentCloudChatDownloadUtils.isInDownloadQueue(data: generateDownloadData(type: type, conversationType: conversationType, key: key));
+      return TencentCloudChatDownloadUtils.isInDownloadQueue(
+        data: generateDownloadData(type: type, conversationType: conversationType, key: key),
+      );
     }
     return false;
   }
@@ -571,7 +597,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
     bool inQueue = isInDownloadQueue();
     if (inQueue == true && TencentCloudChatUtils.checkString(widget.data.message.msgID) != null) {
       String key = TencentCloudChatUtils.checkString(widget.data.message.userID) ?? widget.data.message.groupID ?? "";
-      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null ? ConversationType.V2TIM_GROUP : ConversationType.V2TIM_C2C;
+      int conversationType = TencentCloudChatUtils.checkString(widget.data.message.userID) == null
+          ? ConversationType.V2TIM_GROUP
+          : ConversationType.V2TIM_C2C;
       if (key.isEmpty) {
         console("add to download queue error. key is empty.");
         return false;
@@ -583,7 +611,9 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
         type = ImageType.origin.index;
         console("thumb has been download . download origin local");
       }
-      TencentCloudChatDownloadUtils.removeFromDownloadQueue(data: generateDownloadData(type: type, conversationType: conversationType, key: key));
+      TencentCloudChatDownloadUtils.removeFromDownloadQueue(
+        data: generateDownloadData(type: type, conversationType: conversationType, key: key),
+      );
       safeSetState(() {
         renderRandom = Random().nextInt(10000);
       });
@@ -637,7 +667,10 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
 
     late Widget finalRenderDownloadStatusWidget;
 
-    if ((hasLocalImage() && hasLocalImage(isOrigin: true)) || isErrorMessage || isSendingMessage() || TencentCloudChatUtils.checkString(widget.data.message.id) != null) {
+    if ((hasLocalImage() && hasLocalImage(isOrigin: true)) ||
+        isErrorMessage ||
+        isSendingMessage() ||
+        TencentCloudChatUtils.checkString(widget.data.message.id) != null) {
       return Container();
     } else {
       if (isDownloading()) {
@@ -687,28 +720,26 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
   @override
   Widget defaultBuilder(BuildContext context) {
     final maxBubbleWidth = widget.data.messageRowWidth * 0.8;
-    return TencentCloudChatThemeWidget(build: (context, colorTheme, textStyle) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: getWidth(4), vertical: getHeight(4)),
-        decoration: BoxDecoration(
-          color: showHighlightStatus ? colorTheme.info : (sentFromSelf ? colorTheme.selfMessageBubbleColor : colorTheme.othersMessageBubbleColor),
-          border: Border.all(
-            color: sentFromSelf ? colorTheme.selfMessageBubbleBorderColor : colorTheme.othersMessageBubbleBorderColor,
+    return TencentCloudChatThemeWidget(
+      build: (context, colorTheme, textStyle) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: getWidth(4), vertical: getHeight(4)),
+          decoration: BoxDecoration(
+            color: showHighlightStatus
+                ? colorTheme.info
+                : (sentFromSelf ? colorTheme.selfMessageBubbleColor : colorTheme.othersMessageBubbleColor),
+            border: Border.all(
+              color: sentFromSelf ? colorTheme.selfMessageBubbleBorderColor : colorTheme.othersMessageBubbleBorderColor,
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(getSquareSize(16)),
-            topRight: Radius.circular(getSquareSize(16)),
-            bottomLeft: Radius.circular(getSquareSize(sentFromSelf ? 16 : 0)),
-            bottomRight: Radius.circular(getSquareSize(sentFromSelf ? 0 : 16)),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
                   Stack(
                     children: [
                       Positioned(
@@ -725,15 +756,16 @@ class _TencentCloudChatMessageImageState extends TencentCloudChatMessageState<Te
                           top: getHeight(4),
                           left: getWidth(4),
                           child: downloadStatus(),
-                        )
+                        ),
                     ],
                   ),
-              ],
-            ),
-            messageReactionList(),
-          ],
-        ),
-      );
-    });
+                ],
+              ),
+              messageReactionList(),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
